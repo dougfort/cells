@@ -135,4 +135,40 @@ mod tests {
         entities.sort();
         assert_eq!(entities, vec![(-1, 0), (0, 0), (1, 0),]);
     }
+
+    #[test]
+    fn block_lives() {
+        let mut app = App::new();
+
+        app.add_system(step);
+
+        app.world.spawn().insert(Cell { x: 0, y: 0 });
+        app.world.spawn().insert(Cell { x: 0, y: 1 });
+        app.world.spawn().insert(Cell { x: 1, y: 0 });
+        app.world.spawn().insert(Cell { x: 1, y: 1 });
+
+        app.update();
+
+        let mut entities = app
+            .world
+            .query::<&Cell>()
+            .iter(&app.world)
+            .map(|cell| (cell.x, cell.y))
+            .collect::<Vec<_>>();
+
+        entities.sort();
+        assert_eq!(entities, vec![(0, 0), (0, 1), (1, 0), (1, 1)]);
+
+        app.update();
+
+        let mut entities = app
+            .world
+            .query::<&Cell>()
+            .iter(&app.world)
+            .map(|cell| (cell.x, cell.y))
+            .collect::<Vec<_>>();
+
+        entities.sort();
+        assert_eq!(entities, vec![(0, 0), (0, 1), (1, 0), (1, 1)]);
+    }
 }
